@@ -1,21 +1,3 @@
 # Orderly
 
-**TODO: Add description**
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `orderly` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:orderly, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/orderly>.
-
+Sorted set and sorted map implementations based on Erlang's [`gb_sets`](https://www.erlang.org/doc/man/gb_sets) and [`gb_trees`](https://www.erlang.org/doc/man/gb_trees).

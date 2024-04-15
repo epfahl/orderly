@@ -7,6 +7,7 @@ defmodule Orderly.SortedSet do
   @type set(value) :: :gb_sets.set(value)
   @type t(value) :: %SortedSet{set: set(value)}
   @type t() :: t(any())
+  @type iter() :: :gb_sets.iter()
 
   @doc """
   Create an empty set.
@@ -203,6 +204,81 @@ defmodule Orderly.SortedSet do
       {:ok, :gb_sets.smallest(set)}
     else
       :error
+    end
+  end
+
+  @doc """
+  Create a [`Stream`](https://hexdocs.pm/elixir/Stream.html) from `sorted_set`
+  that emits elements in order starting from the smallest element in the set.
+
+  To generate values lazily, this uses
+  [`:gb_sets.iterator/1`](https://www.erlang.org/doc/man/gb_sets#iterator-1) and
+  [`:gb_sets.next/1`](https://www.erlang.org/doc/man/gb_sets#next-1).
+
+  ## Examples
+
+      iex> set = Orderly.SortedSet.new([2, 1, 3, 5, 4])
+      iex> stream = Orderly.SortedSet.to_stream(set)
+      iex> stream |> Enum.take(3)
+      [1, 2, 3]
+      iex> stream |> Enum.take_while(& &1 <= 4)
+      [1, 2, 3, 4]
+  """
+  @spec to_stream(t()) :: Enumerable.t()
+  def to_stream(sorted_set) do
+    sorted_set |> to_iterator() |> stream_from_iter()
+  end
+
+  @doc """
+  Create a [`Stream`](https://hexdocs.pm/elixir/Stream.html) from `sorted_set`
+  that emits elements in order starting from the first element in the set
+  greater than or equal to `start_value`.
+
+  To generate values lazily, this uses
+  [`:gb_sets.iterator_from/2`](https://www.erlang.org/doc/man/gb_sets#iterator_from-2) and
+  [`:gb_sets.next/1`](https://www.erlang.org/doc/man/gb_sets#next-1).
+
+  ## Examples
+
+      iex> set = Orderly.SortedSet.new([2, 1, 3, 5, 4])
+      iex> stream = Orderly.SortedSet.to_stream(set, 2)
+      iex> stream |> Enum.take(3)
+      [2, 3, 4]
+      iex> stream |> Enum.take_while(& &1 <= 3)
+      [2, 3]
+  """
+  @spec to_stream(t(), value()) :: Enumerable.t()
+  def to_stream(sorted_set, start_value) do
+    sorted_set |> to_iterator(start_value) |> stream_from_iter()
+  end
+
+  # Creata a stream from a sorted set iterator
+  @spec stream_from_iter(iter()) :: Enumerable.t()
+  defp stream_from_iter(iter) do
+    Stream.resource(
+      fn -> iter end,
+      fn iter ->
+        case next(iter) do
+          {:ok, value, iter} -> {[value], iter}
+          :error -> {:halt, iter}
+        end
+      end,
+      fn items -> items end
+    )
+  end
+
+  @spec to_iterator(t()) :: iter()
+  defp to_iterator(%SortedSet{set: set} = _sorted_set), do: :gb_sets.iterator(set)
+
+  @spec to_iterator(t(), value()) :: iter()
+  defp to_iterator(%SortedSet{set: set} = _sorted_set, start_value),
+    do: :gb_sets.iterator_from(start_value, set)
+
+  @spec next(iter()) :: {:ok, value(), iter()} | :error
+  defp next(iter) do
+    case :gb_sets.next(iter) do
+      {value, iter} -> {:ok, value, iter}
+      :none -> :error
     end
   end
 

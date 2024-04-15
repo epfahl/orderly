@@ -36,6 +36,18 @@ defmodule Orderly.SortedSetTest do
     assert not SortedSet.subset?(set2, set1)
   end
 
+  test "stream" do
+    set = SortedSet.new([3, 1, 5, 2, 4])
+    stream = set |> SortedSet.to_stream()
+    stream_from = set |> SortedSet.to_stream(3)
+
+    assert [1, 2, 3] == stream |> Enum.take(3)
+    assert [3, 4, 5] == stream_from |> Enum.take(3)
+    assert [1, 2, 3] == stream |> Enum.take_while(&(&1 <= 3))
+    assert [4] == stream_from |> Enum.filter(&(rem(&1, 2) == 0))
+    assert [4, 5, 6] == stream_from |> Stream.take(3) |> Enum.map(&(&1 + 1))
+  end
+
   test "enumerable" do
     set = SortedSet.new([3, 1, 2])
 

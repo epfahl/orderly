@@ -5,7 +5,7 @@ defmodule Orderly.SortedMap do
 
   `SortedMap` has many of the core functions found in
   [`Map`](https://hexdocs.pm/elixir/1.16.2/Map.html). The important difference
-  between `SortedMap` and `Map` is that the keys in an instance of a sorted
+  between `SortedMap` and `Map` is that the keys in a sorted
   map have a defined order, specifically the
   [Erlang term order](https://www.erlang.org/doc/reference_manual/expressions#term-comparisons).
   For example:
@@ -22,7 +22,7 @@ defmodule Orderly.SortedMap do
   Unlike `Map`, `SortedMap` is an opaque data structure that does not support
   pattern matching.
 
-  `SortedMap` implements the `Enumerable` protocol, and so `Enum`
+  `SortedMap` implements the `Enumerable` protocol, so that `Enum`
   functions can be applied to sorted maps. When applying `Stream` functions
   to a sorted map, it is recommended to first create a stream using
   `SortedMap.to_stream/1` or `SortedMap.to_stream/2`, which adapts the effecient

@@ -5,7 +5,7 @@ defmodule Orderly.SortedSet do
 
   `SortedSet` has many of the core functions found in
   [`MapSet`](https://hexdocs.pm/elixir/1.16.2/MapSet.html). The important difference
-  between `SortedSet` and `MapSet` is that the values in an instance of a sorted
+  between `SortedSet` and `MapSet` is that the values in a sorted
   set have a defined order, specifically the
   [Erlang term order](https://www.erlang.org/doc/reference_manual/expressions#term-comparisons).
   For example:
@@ -22,7 +22,7 @@ defmodule Orderly.SortedSet do
   Like `MapSet`, `SortedSet` is an opaque data structure that does not support
   pattern matching.
 
-  `SortedSet` implements the `Enumerable` protocol, and so `Enum`
+  `SortedSet` implements the `Enumerable` protocol, so that `Enum`
   functions can be applied to sorted sets. When applying `Stream` functions
   to a sorted set, it is recommended to first create a stream using
   `SortedSet.to_stream/1` or `SortedSet.to_stream/2`, which adapts the effecient

@@ -16,6 +16,9 @@ defmodule Orderly.SortedMap do
         |> SortedMap.to_list()
       #=> [a: 4, b: 2, c: 3]
 
+  All functions that involve accessing, inserting, or deleting a key have
+  `O(log n)` time complexity.
+
   Unlike `Map`, `SortedMap` is an opaque data structure that does not support
   pattern matching.
 
@@ -32,8 +35,7 @@ defmodule Orderly.SortedMap do
 
   @type key() :: any()
   @type value() :: any()
-  @type map(key, value) :: :gb_trees.tree(key, value)
-  @type t(key, value) :: %SortedMap{map: map(key, value)}
+  @type t(key, value) :: %SortedMap{map: :gb_trees.tree(key, value)}
   @type t() :: t(any(), any())
   @type iter() :: :gb_trees.iter()
 
@@ -99,7 +101,7 @@ defmodule Orderly.SortedMap do
   def has_key?(%SortedMap{map: map} = _sorted_map, key), do: :gb_trees.is_defined(key, map)
 
   @doc """
-  Get the value for the given `key` in `sorted_map.
+  Get the value for the given `key` in `sorted_map`.
 
   If `key` is present, the corresponding value is returned. Otherwise,
   `default` is returned. If `default` is not provided, `nil` is returned.
@@ -273,9 +275,9 @@ defmodule Orderly.SortedMap do
   def values(%SortedMap{map: map} = _sorted_map), do: :gb_trees.values(map)
 
   @doc """
-  Return the key-value pair with the smallest key in `sorted_set`.
+  Return the key-value pair with the smallest key in `sorted_map`.
 
-  This returns `{:ok, {key, value}}` if the set is non-empty, and `:error` otherwise.
+  This returns `{:ok, {key, value}}` if the map is non-empty, and `:error` otherwise.
 
   ## Examples
 

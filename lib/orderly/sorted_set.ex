@@ -16,6 +16,9 @@ defmodule Orderly.SortedSet do
         |> SortedSet.to_list()
       #=> [1, 2, 3]
 
+  All functions that involve accessing, inserting, or deleting an element have
+  `O(log n)` time complexity.
+
   Like `MapSet`, `SortedSet` is an opaque data structure that does not support
   pattern matching.
 

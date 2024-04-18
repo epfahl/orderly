@@ -1,4 +1,31 @@
 defmodule Orderly.SortedSet do
+  @moduledoc """
+  Implementation of a sorted set based on Erlang's
+  [`gb_sets`](https://www.erlang.org/doc/man/gb_sets).
+
+  `SortedSet` has many of the core functions found in
+  [`MapSet`](https://hexdocs.pm/elixir/1.16.2/MapSet.html). The important difference
+  between `SortedSet` and `MapSet` is that the values in an instance of a sorted
+  set have a defined order, specifically the
+  [Erlang term order](https://www.erlang.org/doc/reference_manual/expressions#term-comparisons).
+  For example:
+
+      set =
+        [2, 1, 3, 1]
+        |> SortedSet.new()
+        |> SortedSet.to_list()
+      #=> [1, 2, 3]
+
+  Like `MapSet`, `SortedSet` is an opaque data structure that does not support
+  pattern matching.
+
+  `SortedSet` implements the `Enumerable` protocol, and so `Enum`
+  functions can be applied to sorted sets. When applying `Stream` functions
+  to a sorted set, it is recommended to first create a stream using
+  `SortedSet.to_stream/1` or `SortedSet.to_stream/2`, which adapts the effecient
+  lazy iterator pattern provided by `gb_sets`.
+  """
+
   alias __MODULE__
 
   defstruct [:set]
@@ -48,7 +75,7 @@ defmodule Orderly.SortedSet do
 
   ## Examples
 
-      iex> Orderly.SortedSet.new([]) |> Orderly.SortedSet.put(1)
+      iex> Orderly.SortedSet.new() |> Orderly.SortedSet.put(1)
       Orderly.SortedSet.new([1])
   """
   @spec put(t(), value()) :: t()
@@ -90,7 +117,7 @@ defmodule Orderly.SortedSet do
   def member?(%SortedSet{set: set} = _sorted_set, element), do: :gb_sets.is_element(element, set)
 
   @doc """
-  Get the number of elements in `sorted_set`.
+  Return the number of elements in `sorted_set`.
 
   ## Examples
 
@@ -99,6 +126,17 @@ defmodule Orderly.SortedSet do
   """
   @spec size(t()) :: non_neg_integer()
   def size(%SortedSet{set: set} = _sorted_set), do: :gb_sets.size(set)
+
+  @doc """
+  Convert `sorted_set` into a sorted list of elements.
+
+  ## Examples
+
+      iex> Orderly.SortedSet.new([2, 1, 3]) |> Orderly.SortedSet.to_list()
+      [1, 2, 3]
+  """
+  @spec to_list(t(value())) :: [value()]
+  def to_list(%SortedSet{set: set} = _sorted_set), do: :gb_sets.to_list(set)
 
   @doc """
   Check if two sorted sets are equal.
@@ -115,17 +153,6 @@ defmodule Orderly.SortedSet do
   def equal?(%SortedSet{} = sorted_set1, %SortedSet{} = sorted_set2) do
     to_list(sorted_set1) == to_list(sorted_set2)
   end
-
-  @doc """
-  Convert `sorted_set` into a sorted list of elements.
-
-  ## Examples
-
-      iex> Orderly.SortedSet.new([2, 1, 3]) |> Orderly.SortedSet.to_list()
-      [1, 2, 3]
-  """
-  @spec to_list(t(value)) :: [value]
-  def to_list(%SortedSet{set: set} = _sorted_set), do: :gb_sets.to_list(set)
 
   @doc """
   Obtain a set that contains all elements of `sorted_set1` and `sorted_set2`.
@@ -186,7 +213,7 @@ defmodule Orderly.SortedSet do
   def subset?(%SortedSet{set: set1}, %SortedSet{set: set2}), do: :gb_sets.is_subset(set1, set2)
 
   @doc """
-  Get the element with the smallest value in `sorted_set`.
+  Return the element with the smallest value in `sorted_set`.
 
   This returns `{:ok, value}` if the set is non-empty, and `:error` otherwise.
 
